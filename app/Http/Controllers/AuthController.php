@@ -50,4 +50,32 @@ class AuthController extends Controller
         );
     }
     
+    /* function to verify token after user registration */
+    public function verifyToken($token)
+    {
+        $user = User::where('token', $token)->first();
+
+        $input = $request->validate([
+            'token' => 'required|string',
+        ]);
+
+        $user = User::where('token', $input['token'])
+            ->where('email_verified', '0')
+            ->first();
+
+        if ($user != null) {
+            User::where('token', $input['token'])
+                ->update([
+                    'email_verified' => '1',
+                    'token' => ''
+                ]);
+
+            Auth::login($user);
+                        
+            return redirect()->route('dashboard')->with(
+                'success', 
+                'You are successfully registered.'
+            );
+        }
+    }
 }
