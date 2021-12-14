@@ -51,10 +51,9 @@ class AuthController extends Controller
     }
     
     /* function to verify token after user registration */
-    public function verifyToken($token)
+    public function verifyToken(Request $request)
     {
-        $user = User::where('token', $token)->first();
-
+        
         $input = $request->validate([
             'token' => 'required|string',
         ]);
@@ -78,4 +77,90 @@ class AuthController extends Controller
             );
         }
     }
+
+    /* function to show login form */
+    public function showLoginForm()
+    {
+        return view('auth.login');
+    }
+
+    /* function to send login mail */
+    public function sendLink(Request $request)
+    {
+        $input = $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $user = User::where('email', $input['email'])
+            ->where('email_verified', '1')
+            ->first();
+
+        if ($user != null) {
+            $token = Str::random(30);
+
+            User::where('email', $input['email'])
+                ->where('email_verified', '1')
+                ->update(['token' => $token]);
+            
+            Mail::to($input['email'])->send(new LoginMail($token));
+            
+            return redirect()->back()->with(
+                'success', 
+                'Login link sent, please check your inbox.'
+            );
+        }
+
+        return redirect()->back()->with(
+            'error', 
+            'Given Email is not exists with our system.'
+        );
+    }
+
+    /* function to login user */
+    public function login(Request $request)
+    {
+        $input = $request->validate([
+            'token' => 'required|string',
+        ]);
+
+        $user = User::where('token', $input['token'])
+            ->where('email_verified', '1')
+            ->first();
+
+        if ($user != null) {
+            User::where('token', $input['token'])
+                ->where('email_verified', '1')
+                ->update(['token' => '']);
+
+            Auth::login($user);
+            
+            return redirect()->route('dashboard')->with(
+                'success', 
+                'You are successfully logged in.'
+            );
+        }
+
+        return redirect()->back()->with(
+            'error', 
+            'Login link is not valid.'
+        );
+    }
+
+    /* function to load dashboard */
+    public function dashboard()
+    {
+        return view('dashboard');
+    }
+
+    /* function to logout user */
+    public function logout(Request $request)
+    {
+        auth()->guard('web')->logout();
+        \Session::flush();
+        return redirect()->route('loginForm')->with(
+            'success', 
+            'You are successfully logged out.'
+        );
+    }
+
 }
