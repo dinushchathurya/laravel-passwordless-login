@@ -12,7 +12,7 @@ class CreateUsersTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->boolean('email_verified_at')->default(0)->comment('1 for verified and 0 for not verified');
+            $table->boolean('email_verified')->default(0)->comment('1 for verified and 0 for not verified');
             $table->string('token');
             $table->rememberToken();
             $table->timestamps();
