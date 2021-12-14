@@ -163,4 +163,5 @@ class AuthController extends Controller
             'You are successfully logged out.'
         );
     }
+    
 }
