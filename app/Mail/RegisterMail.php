@@ -20,7 +20,7 @@ class RegisterMail extends Mailable
 
     public function build()
     {
-        return $this->view('email.register')
+        return $this->view('mail.register')
             ->subject('Email verification mail.')
             ->with('token', $this->token);
     }

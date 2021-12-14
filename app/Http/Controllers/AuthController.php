@@ -51,10 +51,9 @@ class AuthController extends Controller
     }
     
     /* function to verify token after user registration */
-    public function verifyToken($token)
+    public function verifyToken(Request $request)
     {
-        $user = User::where('token', $token)->first();
-
+        
         $input = $request->validate([
             'token' => 'required|string',
         ]);
@@ -80,7 +79,7 @@ class AuthController extends Controller
     }
 
     /* function to show login form */
-    public function login()
+    public function showLoginForm()
     {
         return view('auth.login');
     }
@@ -118,7 +117,7 @@ class AuthController extends Controller
     }
 
     /* function to login user */
-    public function loginUser()
+    public function login(Request $request)
     {
         $input = $request->validate([
             'token' => 'required|string',
@@ -163,5 +162,5 @@ class AuthController extends Controller
             'You are successfully logged out.'
         );
     }
-    
+
 }
