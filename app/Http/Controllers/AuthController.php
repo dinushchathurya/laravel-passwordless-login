@@ -146,4 +146,11 @@ class AuthController extends Controller
             'Login link is not valid.'
         );
     }
+
+    /* function to load dashboard */
+    public function dashboard()
+    {
+        return view('dashboard');
+    }
+    
 }
