@@ -84,4 +84,36 @@ class AuthController extends Controller
     {
         return view('auth.login');
     }
+
+    /* function to send login mail */
+    public function sendLink(Request $request)
+    {
+        $input = $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $user = User::where('email', $input['email'])
+            ->where('email_verified', '1')
+            ->first();
+
+        if ($user != null) {
+            $token = Str::random(30);
+
+            User::where('email', $input['email'])
+                ->where('email_verified', '1')
+                ->update(['token' => $token]);
+            
+            Mail::to($input['email'])->send(new LoginMail($token));
+            
+            return redirect()->back()->with(
+                'success', 
+                'Login link sent, please check your inbox.'
+            );
+        }
+
+        return redirect()->back()->with(
+            'error', 
+            'Given Email is not exists with our system.'
+        );
+    }
 }
