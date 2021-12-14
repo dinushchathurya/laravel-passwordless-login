@@ -116,4 +116,34 @@ class AuthController extends Controller
             'Given Email is not exists with our system.'
         );
     }
+
+    /* function to login user */
+    public function loginUser()
+    {
+        $input = $request->validate([
+            'token' => 'required|string',
+        ]);
+
+        $user = User::where('token', $input['token'])
+            ->where('email_verified', '1')
+            ->first();
+
+        if ($user != null) {
+            User::where('token', $input['token'])
+                ->where('email_verified', '1')
+                ->update(['token' => '']);
+
+            Auth::login($user);
+            
+            return redirect()->route('dashboard')->with(
+                'success', 
+                'You are successfully logged in.'
+            );
+        }
+
+        return redirect()->back()->with(
+            'error', 
+            'Login link is not valid.'
+        );
+    }
 }
