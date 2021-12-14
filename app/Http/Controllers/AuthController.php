@@ -78,4 +78,10 @@ class AuthController extends Controller
             );
         }
     }
+
+    /* function to show login form */
+    public function login()
+    {
+        return view('auth.login');
+    }
 }
