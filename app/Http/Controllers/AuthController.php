@@ -152,5 +152,15 @@ class AuthController extends Controller
     {
         return view('dashboard');
     }
-    
+
+    /* function to logout user */
+    public function logout(Request $request)
+    {
+        auth()->guard('web')->logout();
+        \Session::flush();
+        return redirect()->route('loginForm')->with(
+            'success', 
+            'You are successfully logged out.'
+        );
+    }
 }
